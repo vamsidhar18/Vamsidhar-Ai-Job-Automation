@@ -5,7 +5,9 @@
 [![Node.js](https://img.shields.io/badge/Node.js-18+-green.svg)](https://nodejs.org/)
 [![License](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 [![Platform](https://img.shields.io/badge/Platform-Multi--Platform-orange.svg)](https://github.com/vamsidhar18/Vamsidhar-Ai-Job-Automation)
-[![AI-Powered](https://img.shields.io/badge/AI-Powered-OpenAI-red.svg)](https://openai.com/)
+[![AI-Powered](https://img.shields.io/badge/AI-Powered-Intelligent-purple.svg)](https://github.com/vamsidhar18/Vamsidhar-Ai-Job-Automation)
+[![OpenAI](https://img.shields.io/badge/OpenAI-GPT--4-red.svg)](https://openai.com/)
+[![Claude](https://img.shields.io/badge/Claude-AI-orange.svg)](https://claude.ai/)
 
 ## 🎯 Overview
 

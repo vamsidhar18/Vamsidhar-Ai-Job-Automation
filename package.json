@@ -1,0 +1,136 @@
+{
+  "name": "job-automation-bot",
+  "version": "1.0.0",
+  "description": "AI-powered job automation system for Software Engineers seeking H1B sponsorship",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "test": "node test/test-system.js",
+    "test-jobright": "node test/test-jobright.js",
+    "test-linkedin": "node test/test-linkedin.js",
+    "test-workday": "node test/test-workday.js",
+    "test-all-platforms": "npm run test-jobright && npm run test-linkedin && npm run test-workday",
+    "dashboard": "node dashboard/server.js",
+    "init-db": "node database/init-database.js",
+    "dev": "nodemon index.js",
+    "automation": "node src/automation/JobAutomationMaster.js",
+    "resume-test": "node test/test-resume-engine.js",
+    "ai-bot-test": "node test/test-ai-bot.js",
+    "debug-login-test.js": "node test/debug-login-test.js",
+    "debug-test.js": "node test/debug-test.js",
+    "debug-jobright-test.js": "node test/debug-jobright-test.js",
+    "test-real-apply": "node test/test-real-application.js",
+    "test-discover": "node test/test-job-discovery.js",
+    "test-dry-run": "node test/test-dry-run.js",
+    "test-imports.js": "node test/test-imports.js",
+    "simple-debug.js": "node test/simple-debug.js",
+    "simple-test.js": "node test/simple-test.js",
+    "fixed-browser-test.js": "node test/fixed-browser-test.js",
+    "test-login-fix.js": "node test/test-login-fix.js",
+    "job-discovery-test.js": "node test/job-discovery-test.js",
+    "single-application-test.js": "node test/single-application-test.js",
+    "simple-login-test.js": "node test/simple-login-test.js",
+    "sample-test.js": "node test/sample-test.js",
+    "enhanced-login-test.js": "node test/enhanced-login-test.js",
+    "working-test.js": "node test/working-test.js",
+    "firefox-jobright-automation.js": "node test/firefox-jobright-automation.js",
+    "working-jobright-test.js": "node test/working-jobright-test.js",
+    "apply-5-jobs": "node test/apply-5-jobs.js",
+    "apply-10-jobs": "node test/apply-10-jobs.js",
+    "automation-cycle": "node test/automation-cycle.js",
+    "jobright-discover": "node test/jobright-discover.js",
+    "jobright-apply-one": "node test/jobright-apply-one.js",
+    "jobright-apply-batch": "node test/jobright-apply-batch.js",
+    "linkedin-apply": "node test/linkedin-apply.js",
+    "workday-apply": "node test/workday-apply.js",
+    "test-full-flow": "npm run test-discover && npm run test-real-apply",
+    "daily-automation": "node automation/daily-run.js",
+    "production-run": "NODE_ENV=production node automation/production-run.js"
+  },
+  "dependencies": {
+    "@langchain/core": "^0.3.66",
+    "@langchain/openai": "^0.6.3",
+    "axios": "^1.6.0",
+    "cheerio": "^1.0.0-rc.12",
+    "cors": "^2.8.5",
+    "dotenv": "^16.6.1",
+    "express": "^4.21.2",
+    "imap": "^0.8.19",
+    "langchain": "^0.3.30",
+    "mailparser": "^3.6.0",
+    "node-schedule": "^2.1.1",
+    "nodemailer": "^6.9.0",
+    "open": "^10.2.0",
+    "openai": "^4.20.0",
+    "pdf-parse": "^1.1.1",
+    "pdfkit": "^0.13.0",
+    "pg": "^8.11.0",
+    "playwright": "^1.40.0",
+    "react": "^19.1.1",
+    "react-dom": "^19.1.1"
+  },
+  "devDependencies": {
+    "nodemon": "^3.0.0"
+  },
+  "keywords": [
+    "job-automation",
+    "ai-bot",
+    "h1b-sponsorship",
+    "resume-customization",
+    "interview-preparation",
+    "jobright-automation",
+    "linkedin-automation",
+    "workday-automation",
+    "job-automation",
+    "automated-applications",
+    "job-application-bot",
+    "h1b-visa-jobs"
+  ],
+  "author": "[YOUR_NAME] <[YOUR_EMAIL]@gmail.com>",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/[YOUR_GITHUB_USERNAME]/job-automation-bot.git"
+  },
+  "bugs": {
+    "url": "https://github.com/[YOUR_GITHUB_USERNAME]/job-automation-bot/issues"
+  },
+      "homepage": "https://github.com/[YOUR_GITHUB_USERNAME]/job-automation-bot#readme",
+  "engines": {
+    "node": ">=16.0.0",
+    "npm": ">=8.0.0"
+  },
+  "config": {
+    "owner": "[YOUR_NAME]",
+    "email": "[YOUR_EMAIL]@gmail.com",
+    "target": "H1B Software Engineer Positions",
+    "platforms": [
+      "jobright",
+      "linkedin",
+      "workday"
+    ],
+    "automation": {
+      "maxApplicationsPerDay": 30,
+      "targetScore": 70,
+      "runFrequency": "hourly",
+      "enableRealApplications": false
+    }
+  },
+  "automation": {
+    "jobright": {
+      "enabled": true,
+      "maxApplications": 10,
+      "score_threshold": 70
+    },
+    "linkedin": {
+      "enabled": false,
+      "maxApplications": 15,
+      "score_threshold": 75
+    },
+    "workday": {
+      "enabled": false,
+      "maxApplications": 5,
+      "score_threshold": 80
+    }
+  }
+}

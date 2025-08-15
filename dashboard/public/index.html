@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Job Automation Dashboard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#3B82F6',
+                        secondary: '#1E40AF',
+                        success: '#10B981',
+                        warning: '#F59E0B',
+                        danger: '#EF4444'
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-gray-50">
+    <div id="root"></div>
+
+    <script type="text/babel">
+        const { useState, useEffect } = React;
+
+        // Dashboard Component
+        function Dashboard() {
+            const [stats, setStats] = useState(null);
+            const [submissions, setSubmissions] = useState([]);
+            const [aiLearning, setAiLearning] = useState([]);
+            const [loading, setLoading] = useState(true);
+            const [automationStatus, setAutomationStatus] = useState({ isRunning: false });
+            const [logs, setLogs] = useState([]);
+
+            // Fetch dashboard data
+            const fetchData = async () => {
+                try {
+                    const [statsRes, submissionsRes, aiLearningRes, statusRes, logsRes] = await Promise.all([
+                        fetch('/api/stats'),
+                        fetch('/api/submissions'),
+                        fetch('/api/ai-learning'),
+                        fetch('/api/automation-status'),
+                        fetch('/api/logs')
+                    ]);
+
+                    const statsData = await statsRes.json();
+                    const submissionsData = await submissionsRes.json();
+                    const aiLearningData = await aiLearningRes.json();
+                    const statusData = await statusRes.json();
+                    const logsData = await logsRes.json();
+
+                    setStats(statsData);
+                    setSubmissions(submissionsData);
+                    setAiLearning(aiLearningData);
+                    setAutomationStatus(statusData);
+                    setLogs(logsData);
+                } catch (error) {
+                    console.error('Error fetching data:', error);
+                } finally {
+                    setLoading(false);
+                }
+            };
+
+            // Start automation
+            const startAutomation = async (mode) => {
+                try {
+                    const response = await fetch('/api/start-automation', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ mode })
+                    });
+                    
+                    const result = await response.json();
+                    if (result.success) {
+                        alert(`Automation started in ${mode} mode!`);
+                        // Refresh data after a delay
+                        setTimeout(fetchData, 2000);
+                    } else {
+                        alert('Failed to start automation: ' + result.error);
+                    }
+                } catch (error) {
+                    alert('Error starting automation: ' + error.message);
+                }
+            };
+
+            useEffect(() => {
+                fetchData();
+                // Refresh data every 30 seconds
+                const interval = setInterval(fetchData, 30000);
+                return () => clearInterval(interval);
+            }, []);
+
+            if (loading) {
+                return (
+                    <div class="flex items-center justify-center min-h-screen">
+                        <div class="animate-spin rounded-full h-32 w-32 border-b-2 border-primary"></div>
+                    </div>
+                );
+            }
+
+            return (
+                <div class="min-h-screen bg-gray-50">
+                    {/* Header */}
+                    <header class="bg-white shadow-lg">
+                        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                            <div class="flex justify-between items-center py-6">
+                                <div>
+                                    <h1 class="text-3xl font-bold text-gray-900">🤖 Job Automation Dashboard</h1>
+                                    <p class="text-gray-600">AI-Powered Job Application Bot Control Center</p>
+                                </div>
+                                <div class="flex items-center space-x-4">
+                                    <div class={`px-4 py-2 rounded-full text-sm font-medium ${
+                                        automationStatus.isRunning 
+                                            ? 'bg-success text-white' 
+                                            : 'bg-gray-200 text-gray-700'
+                                    }`}>
+                                        {automationStatus.isRunning ? '🟢 Running' : '⚪ Idle'}
+                                    </div>
+                                    <button 
+                                        onClick={() => fetchData()}
+                                        class="bg-primary text-white px-4 py-2 rounded-lg hover:bg-secondary transition-colors"
+                                    >
+                                        <i class="fas fa-sync-alt mr-2"></i>Refresh
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </header>
+
+                    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+                        {/* Statistics Cards */}
+                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+                            <div class="bg-white rounded-lg shadow-lg p-6">
+                                <div class="flex items-center">
+                                    <div class="p-3 rounded-full bg-blue-100 text-blue-600">
+                                        <i class="fas fa-file-alt text-2xl"></i>
+                                    </div>
+                                    <div class="ml-4">
+                                        <p class="text-sm font-medium text-gray-600">Total Applications</p>
+                                        <p class="text-2xl font-bold text-gray-900">{stats?.totalApplications || 0}</p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="bg-white rounded-lg shadow-lg p-6">
+                                <div class="flex items-center">
+                                    <div class="p-3 rounded-full bg-success text-white">
+                                        <i class="fas fa-check-circle text-2xl"></i>
+                                    </div>
+                                    <div class="ml-4">
+                                        <p class="text-sm font-medium text-gray-600">Successful</p>
+                                        <p class="text-2xl font-bold text-gray-900">{stats?.successfulApplications || 0}</p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="bg-white rounded-lg shadow-lg p-6">
+                                <div class="flex items-center">
+                                    <div class="p-3 rounded-full bg-warning text-white">
+                                        <i class="fas fa-percentage text-2xl"></i>
+                                    </div>
+                                    <div class="ml-4">
+                                        <p class="text-sm font-medium text-gray-600">Success Rate</p>
+                                        <p class="text-2xl font-bold text-gray-900">{stats?.successRate || 0}%</p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="bg-white rounded-lg shadow-lg p-6">
+                                <div class="flex items-center">
+                                    <div class="p-3 rounded-full bg-purple-100 text-purple-600">
+                                        <i class="fas fa-brain text-2xl"></i>
+                                    </div>
+                                    <div class="ml-4">
+                                        <p class="text-sm font-medium text-gray-600">AI Interactions</p>
+                                        <p class="text-2xl font-bold text-gray-900">{stats?.totalAIInteractions || 0}</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* Platform Statistics */}
+                        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
+                            <div class="bg-white rounded-lg shadow-lg p-6">
+                                <h3 class="text-lg font-semibold text-gray-900 mb-4">Platform Distribution</h3>
+                                <div class="space-y-3">
+                                    {stats?.platforms && Object.entries(stats.platforms).map(([platform, count]) => (
+                                        <div key={platform} class="flex items-center justify-between">
+                                            <div class="flex items-center">
+                                                <div class={`w-3 h-3 rounded-full mr-3 ${
+                                                    platform === 'workday' ? 'bg-blue-500' :
+                                                    platform === 'linkedin' ? 'bg-blue-600' :
+                                                    platform === 'greenhouse' ? 'bg-green-500' :
+                                                    platform === 'lever' ? 'bg-purple-500' :
+                                                    platform === 'bamboohr' ? 'bg-orange-500' :
+                                                    platform === 'apple' ? 'bg-gray-500' :
+                                                    'bg-gray-400'
+                                                }`}></div>
+                                                <span class="text-sm font-medium text-gray-700 capitalize">{platform}</span>
+                                            </div>
+                                            <span class="text-sm font-semibold text-gray-900">{count}</span>
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+
+                            <div class="bg-white rounded-lg shadow-lg p-6">
+                                <h3 class="text-lg font-semibold text-gray-900 mb-4">Recent Activity</h3>
+                                <div class="space-y-3 max-h-64 overflow-y-auto">
+                                    {stats?.recentActivity?.map((activity, index) => (
+                                        <div key={index} class="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                                            <div>
+                                                <p class="text-sm font-medium text-gray-900">{activity.jobTitle || 'Unknown Job'}</p>
+                                                <p class="text-xs text-gray-600">{activity.company || 'Unknown Company'}</p>
+                                            </div>
+                                            <div class="flex items-center">
+                                                <span class={`px-2 py-1 rounded-full text-xs font-medium ${
+                                                    activity.success 
+                                                        ? 'bg-success text-white' 
+                                                        : 'bg-danger text-white'
+                                                }`}>
+                                                    {activity.success ? 'Success' : 'Failed'}
+                                                </span>
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* Automation Controls */}
+                        <div class="bg-white rounded-lg shadow-lg p-6 mb-8">
+                            <h3 class="text-lg font-semibold text-gray-900 mb-4">Automation Controls</h3>
+                            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                                <button 
+                                    onClick={() => startAutomation('single')}
+                                    class="bg-primary text-white px-4 py-3 rounded-lg hover:bg-secondary transition-colors"
+                                >
+                                    <i class="fas fa-play mr-2"></i>
+                                    Single Application
+                                </button>
+                                <button 
+                                    onClick={() => startAutomation('batch')}
+                                    class="bg-success text-white px-4 py-3 rounded-lg hover:bg-green-700 transition-colors"
+                                >
+                                    <i class="fas fa-list mr-2"></i>
+                                    Batch (5 Jobs)
+                                </button>
+                                <button 
+                                    onClick={() => startAutomation('workday')}
+                                    class="bg-blue-600 text-white px-4 py-3 rounded-lg hover:bg-blue-700 transition-colors"
+                                >
+                                    <i class="fas fa-building mr-2"></i>
+                                    Workday Test
+                                </button>
+                                <button 
+                                    onClick={() => startAutomation('all-platforms')}
+                                    class="bg-purple-600 text-white px-4 py-3 rounded-lg hover:bg-purple-700 transition-colors"
+                                >
+                                    <i class="fas fa-globe mr-2"></i>
+                                    All Platforms
+                                </button>
+                            </div>
+                        </div>
+
+                        {/* Submissions Table */}
+                        <div class="bg-white rounded-lg shadow-lg p-6 mb-8">
+                            <h3 class="text-lg font-semibold text-gray-900 mb-4">Recent Submissions</h3>
+                            <div class="overflow-x-auto">
+                                <table class="min-w-full divide-y divide-gray-200">
+                                    <thead class="bg-gray-50">
+                                        <tr>
+                                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Job</th>
+                                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Company</th>
+                                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Platform</th>
+                                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody class="bg-white divide-y divide-gray-200">
+                                        {submissions.slice(-10).reverse().map((submission, index) => (
+                                            <tr key={index}>
+                                                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                                                    {submission.jobTitle || 'Unknown'}
+                                                </td>
+                                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                                    {submission.company || 'Unknown'}
+                                                </td>
+                                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                                    <span class={`px-2 py-1 rounded-full text-xs font-medium capitalize ${
+                                                        submission.platform === 'workday' ? 'bg-blue-100 text-blue-800' :
+                                                        submission.platform === 'linkedin' ? 'bg-blue-100 text-blue-800' :
+                                                        submission.platform === 'greenhouse' ? 'bg-green-100 text-green-800' :
+                                                        submission.platform === 'lever' ? 'bg-purple-100 text-purple-800' :
+                                                        submission.platform === 'bamboohr' ? 'bg-orange-100 text-orange-800' :
+                                                        submission.platform === 'apple' ? 'bg-gray-100 text-gray-800' :
+                                                        'bg-gray-100 text-gray-800'
+                                                    }`}>
+                                                        {submission.platform || 'unknown'}
+                                                    </span>
+                                                </td>
+                                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                                    <span class={`px-2 py-1 rounded-full text-xs font-medium ${
+                                                        submission.success 
+                                                            ? 'bg-success text-white' 
+                                                            : 'bg-danger text-white'
+                                                    }`}>
+                                                        {submission.success ? 'Success' : 'Failed'}
+                                                    </span>
+                                                </td>
+                                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                                    {submission.timestamp ? new Date(submission.timestamp).toLocaleDateString() : 'Unknown'}
+                                                </td>
+                                            </tr>
+                                        ))}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                        {/* AI Learning Data */}
+                        <div class="bg-white rounded-lg shadow-lg p-6 mb-8">
+                            <h3 class="text-lg font-semibold text-gray-900 mb-4">AI Learning Data</h3>
+                            <div class="space-y-3 max-h-64 overflow-y-auto">
+                                {aiLearning.slice(-10).reverse().map((entry, index) => (
+                                    <div key={index} class="p-4 bg-gray-50 rounded-lg">
+                                        <div class="flex justify-between items-start mb-2">
+                                            <p class="text-sm font-medium text-gray-900">{entry.question}</p>
+                                            <span class="text-xs text-gray-500">{new Date(entry.timestamp).toLocaleDateString()}</span>
+                                        </div>
+                                        <p class="text-sm text-gray-600">{entry.answer}</p>
+                                        {entry.context && (
+                                            <p class="text-xs text-gray-500 mt-1">Context: {entry.context}</p>
+                                        )}
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+
+                        {/* Logs */}
+                        <div class="bg-white rounded-lg shadow-lg p-6">
+                            <h3 class="text-lg font-semibold text-gray-900 mb-4">System Logs</h3>
+                            <div class="space-y-2 max-h-64 overflow-y-auto">
+                                {logs.map((log, index) => (
+                                    <div key={index} class="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                                        <div>
+                                            <p class="text-sm font-medium text-gray-900">{log.filename}</p>
+                                            <p class="text-xs text-gray-500">
+                                                Size: {(log.size / 1024).toFixed(1)} KB | 
+                                                Modified: {new Date(log.modified).toLocaleDateString()}
+                                            </p>
+                                        </div>
+                                        <button 
+                                            onClick={() => window.open(`/api/logs/${log.filename}`, '_blank')}
+                                            class="bg-primary text-white px-3 py-1 rounded text-xs hover:bg-secondary transition-colors"
+                                        >
+                                            View
+                                        </button>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            );
+        }
+
+        // Render the dashboard
+        ReactDOM.render(<Dashboard />, document.getElementById('root'));
+    </script>
+</body>
+</html> 

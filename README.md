@@ -1,6 +1,6 @@
-# 🤖 AI-Powered Job Automation Bot
+# 🤖 JobGenie
 
-> **Intelligent job application automation system for Software Engineers seeking H1B sponsorship opportunities**
+> **A Smart Assistant that applies to jobs intelligently**
 
 [![Node.js](https://img.shields.io/badge/Node.js-18+-green.svg)](https://nodejs.org/)
 [![License](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
